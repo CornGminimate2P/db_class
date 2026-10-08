@@ -10,9 +10,7 @@ create table EMPLOYEE (
 	SUPERSSN number(9,0),
 	DNO number(2,0),
 
-	constraint pk_emp_ssn primary key (SSN),
-	constraint pk_emp_superssn primary key (SUPERSSN),
-	constraint pk_emp_dno primary key (DNO)
+	constraint pk_emp_ssn primary key (SSN)
 );
 
 create table DEPARTMENT (
@@ -21,35 +19,56 @@ create table DEPARTMENT (
 	MGRSSN	number(9,0),
 	MGRSTARTDATE date,
 
-	constraint pk_dept_dnumber primary key (DNUMBER),
-	constraint fk_dept_mgrssn foreign key (MGRSSN) references EMPLOYEE (SSN)
+	constraint pk_dept_dnumber primary key (DNUMBER)
 );
 
 create table DEPT_LOCATIONS (
 	DNUMBER	number(2,0),
 	DLOCATION varchar2(15),
 
-	constraint fk_dept_loc_dnumber foreign key (DNUMBER) references DEPARTMENT (DNUMBER),
-	constraint   
+	constraint pk_deptloc_loc primary key (DNUMBER,DLOCATION)
 );
 
 create table PROJECT (
 	PNUMBER	number(2,0),
 	PNAME	varchar2(20),
 	PLOCATION	varchar(15),
-	DNUM	number(2,0)
+	DNUM	number(2,0),
+
+	constraint pk_project_pnum primary key (PNUMBER)
 );
 
 create table WORKS_ON (
-	ESSN,
-	PNO,
-	HOURS	number(2,1)
+	ESSN	number(9,0),
+	PNO	number(2,0),
+	HOURS	number(10,2),
+
+	constraint pk_works_on primary key (ESSN,PNO)
 );
 
-create table DEPENDENT (
-	ESSN,
-	DEPENDENT_NAME,
-	SEX,
-	BDATE,
-	RELATIONSHIP
-);
+alter table EMPLOYEE
+	add constraint fk_emp_superssn foreign key (SUPERSSN) references EMPLOYEE (SSN);
+
+alter table EMPLOYEE
+	add constraint fk_emp_dno foreign key (DNO) references DEPARTMENT (DNUMBER);
+
+alter table DEPARTMENT
+	add constraint fk_dept_mgrssn foreign key (MGRSSN) references EMPLOYEE (SSN);
+
+alter table DEPT_LOCATIONS
+	add constraint fk_deptloc_dnumber foreign key (DNUMBER) references DEPARTMENT (DNUMBER);
+
+alter table  WORKS_ON
+	add constraint fk_works_on_emp foreign key (ESSN) references EMPLOYEE (SSN);
+
+alter table  WORKS_ON
+	add constraint fk_works_on_proj foreign key (PNO) references PROJECT (PNUMBER);
+
+--select table_name, constraint_name, constraint_type from USER_CONSTRAINTS
+--where table_name in ('EMPLOYEE','DEPARTMENT','PROJECT');
+
+--drop table EMPLOYEE cascade constraints;
+--drop table DEPARTMENT cascade constraints;
+--drop table DEPT_LOCATIONS cascade constraints;
+--drop table PROJECT cascade constraints;
+--drop table WORKS_ON cascade constraints;
